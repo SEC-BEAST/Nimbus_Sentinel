@@ -1,0 +1,20 @@
+You need to create a private environment to run the server script for that u can use 
+
+
+
+
+#this will create the private env named myenv
+python3 -m venv myenv
+source myenv/bin/activate  # For Linux/macOS
+myenv\Scripts\activate     # For Windows
+ 
+# these dependencies are to be installed in virtual env
+pip install art websockets openstacksdk python-dotenv aiolimiter keystoneauth1 python-novaclient python-glanceclient python-neutronclient
+
+
+#installation could be verified by 
+
+python -c "import art, websockets, openstack, dotenv, aiolimiter, keystoneauth1, novaclient, glanceclient, neutronclient; print('All dependencies installed successfully!')"
+
+# Run the script 
+python3 server.py
