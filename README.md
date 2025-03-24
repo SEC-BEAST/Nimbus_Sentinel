@@ -4,7 +4,7 @@
 
 NimbusSentinel: A security-focused cloud monitoring system designed to enhance threat detection and incident response by analyzing cloud platform logs.
 
-![NimbusSentinel]!(https://github.com/user-attachments/assets/934e5414-985e-4488-ad8c-691f0bcdcbd6)
+![NimbusSentinel]!
  
 > **"Securing the Cloud, One Log at a Time!"**
 
@@ -90,10 +90,8 @@ This project is licensed under the **MIT License** – modify, use, and share fr
 ## 🌍 Let's Connect!
 Want to discuss cybersecurity, cloud security, or potential collaborations? Reach out! 🚀
 
-📧 Email: singhayush3264@gmail.com ![image](https://github.com/user-attachments/assets/0f143031-4e3e-4178-91cf-b36be5bcb9b6)
+📧 Email: singhayush3264@gmail.com
 
-
-🔗 LinkedIn:  https://www.linkedin.com/in/ayush-singh-18a9b1253/ ![image](https://github.com/user-attachments/assets/bf25652b-0cab-41ea-9525-7d972b1f4d77)
-
+🔗 LinkedIn:  https://www.linkedin.com/in/ayush-singh-18a9b1253/ 
 
 ⭐ **Star this repo** to support the project!
