@@ -40,7 +40,7 @@
 
 ```bash
 # 📥 Clone the repository
-git clone https://github.com/yourusername/NimbusSentinel.git
+git clone https://github.com/SEC-BEAST/NimbusSentinel.git
 
 # 📂 Navigate to the project folder
 cd NimbusSentinel
