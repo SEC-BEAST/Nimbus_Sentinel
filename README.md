@@ -4,7 +4,7 @@
 
 NimbusSentinel: A security-focused cloud monitoring system designed to enhance threat detection and incident response by analyzing cloud platform logs.
 
-![NimbusSentinel](https://yourimageurl.com/banner.png)  
+![NimbusSentinel]([https://cdn.builtin.com/cdn-cgi/image/f=auto,fit=cover,w=1200,h=635,q=80/https://builtin.com/sites/www.builtin.com/files/2023-01/Cloud%20Security.png])  
 > **"Securing the Cloud, One Log at a Time!"**
 
 ---
