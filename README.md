@@ -35,7 +35,7 @@ NimbusSentinel: A security-focused cloud monitoring system designed to enhance t
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/NimbusSentinel.git
+git clone https://github.com/SEC-BEAST/NimbusSentinel.git
 
 # Navigate to the project folder
 cd NimbusSentinel
@@ -75,7 +75,7 @@ We welcome contributions! Help improve NimbusSentinel by submitting a pull reque
 
 ```bash
 git checkout -b feature-branch
-git commit -m "Your awesome feature"
+git commit -m "Implemented real-time threat alert system"
 git push origin feature-branch
 ```
 
@@ -89,6 +89,6 @@ This project is licensed under the **MIT License** – modify, use, and share fr
 ## 🌍 Let's Connect!
 Want to discuss cybersecurity, cloud security, or potential collaborations? Reach out! 🚀
 
-📧 Email:   
-🔗 LinkedIn:  
+📧 Email: singhayush3264@gmail.com
+🔗 LinkedIn:  https://www.linkedin.com/in/ayush-singh-18a9b1253/
 ⭐ **Star this repo** to support the project!
