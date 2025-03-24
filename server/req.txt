@@ -1,0 +1,14 @@
+pip install art websockets openstacksdk python-dotenv aiolimiter keystoneauth1 python-novaclient python-glanceclient python-neutronclient tabulate
+
+
+
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
+
+
+
+Create a .env file to store environment variables:
+echo "PORT=8090" > .env
+echo "SSL_CERT_PATH=cert.pem" >> .env
+echo "SSL_KEY_PATH=key.pem" >> .env
+
+This file defines the WebSocket port and SSL certificate paths for the server.
