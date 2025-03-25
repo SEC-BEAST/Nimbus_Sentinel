@@ -2,19 +2,33 @@ package main
 
 import (
 	"bufio"
+	"bytes"
+	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/exec"
+	"regexp"   // ✅ Added for regex-based filtering
+	"strings"  // ✅ Added for string manipulation
 	"time"
-	"path/filepath"
+
+	_ "github.com/lib/pq" // PostgreSQL driver
 )
 
 const (
-	serverURL = "http://localhost:5000/logs" // Mock server to send logs
-	systemdLogScript = "extract_systemd_logs.sh" // Path to systemd log extraction script
+	serverURL         = "http://localhost:5000/logs" // Mock server to send logs
+	systemdLogScript  = "extract_systemd_logs.sh"   // Path to systemd log extraction script
+	dbUser            = "postgres"
+	dbPassword        = "yourpassword"
+	dbName            = "cloudpulse"
+	dbHost            = "localhost"
+	dbPort            = "5432"
 )
+
+var db *sql.DB
+var outputMode string
 
 var defaultLogPaths = []string{
 	"/var/log/syslog",
@@ -43,6 +57,12 @@ var defaultLogPaths = []string{
 func main() {
 	// Ensure systemd service is set up before anything else
 	setupSystemdService()
+
+	fmt.Println("Choose log destination:")
+	fmt.Println("1. Send to HTTP Server")
+	fmt.Println("2. Save to Local File")
+	fmt.Println("3. Store in Database")
+	fmt.Scanln(&outputMode)
 
 	var logFilePath string
 	fmt.Println("Choose log source:")
@@ -100,7 +120,7 @@ func setupSystemdService() {
 	}
 }
 
-
+// Function to monitor a log file and process new lines
 func monitorLogFile(logFilePath string) {
 	file, err := os.Open(logFilePath)
 	if err != nil {
@@ -114,18 +134,106 @@ func monitorLogFile(logFilePath string) {
 	for {
 		line, err := reader.ReadString('\n')
 		if err == nil {
-			go sendLog(line)
+			// ✅ Define `cleanedMessage` here by calling `cleanLogMessage(line)`
+			cleanedMessage := cleanLogMessage(line)
+
+			logEntry := map[string]string{
+				"timestamp": time.Now().UTC().Format(time.RFC3339),
+				"message":   cleanedMessage,
+				"source":    logFilePath,
+				"cloud":     "openstack",
+			}
+
+			jsonData, err := json.Marshal(logEntry)
+			if err != nil {
+				log.Printf("Failed to encode log as JSON: %v", err)
+				continue
+			}
+
+			// Output handling
+			switch outputMode {
+			case "1":
+				sendToHTTP(jsonData)
+			case "2":
+				writeToFile(jsonData)
+			case "3":
+				saveToDatabase(logEntry)
+			default:
+				log.Println("Invalid output mode. Defaulting to HTTP.")
+				sendToHTTP(jsonData)
+			}
 		}
-		time.Sleep(1 * time.Second) // Prevent excessive CPU usage
+		time.Sleep(1 * time.Second)
 	}
 }
 
-func sendLog(logLine string) {
-	resp, err := http.Post(serverURL, "text/plain", bufio.NewReaderString(logLine))
+func sendToHTTP(jsonData []byte) {
+	resp, err := http.Post(serverURL, "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
-		log.Printf("Failed to send log: %v", err)
+		log.Printf("Failed to send log to HTTP: %v", err)
 		return
 	}
 	defer resp.Body.Close()
-	fmt.Println("Log sent successfully")
+	fmt.Println("Log sent to HTTP successfully:", string(jsonData))
+}
+
+func writeToFile(jsonData []byte) {
+	file, err := os.OpenFile("cloudpulse_logs.json", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Printf("Failed to open log file: %v", err)
+		return
+	}
+	defer file.Close()
+
+	_, err = file.WriteString(string(jsonData) + "\n")
+	if err != nil {
+		log.Printf("Failed to write log to file: %v", err)
+		return
+	}
+
+	fmt.Println("Log saved to file successfully")
+}
+
+func saveToDatabase(logData map[string]string) {
+	if db == nil {
+		connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+			dbHost, dbPort, dbUser, dbPassword, dbName)
+		var err error
+		db, err = sql.Open("postgres", connStr)
+		if err != nil {
+			log.Fatalf("Failed to connect to database: %v", err)
+		}
+	}
+
+	_, err := db.Exec("INSERT INTO logs (timestamp, message, source, cloud) VALUES ($1, $2, $3, $4)",
+		logData["timestamp"], logData["message"], logData["source"], logData["cloud"])
+
+	if err != nil {
+		log.Printf("Failed to insert log into database: %v", err)
+		return
+	}
+
+	fmt.Println("Log stored in database successfully")
+}
+
+func cleanLogMessage(rawMessage string) string {
+	// Remove ANSI escape sequences (color codes)
+	ansiEscape := regexp.MustCompile(`\x1b\[[0-9;]*m`)
+	cleanedMessage := ansiEscape.ReplaceAllString(rawMessage, "")
+
+	// Remove leading timestamps (e.g., "2025-03-25T20:35:36.731131+05:30")
+	timestampPattern := regexp.MustCompile(`^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+\+\d{2}:\d{2}\s`)
+	cleanedMessage = timestampPattern.ReplaceAllString(cleanedMessage, "")
+
+	// Remove hostname, process info, and log level, keeping only the actual error message
+	processPattern := regexp.MustCompile(`^\S+\s+\S+\[\d+\]:\s(ERROR\s[\w\d\._]+)`)
+	matches := processPattern.FindStringSubmatch(cleanedMessage)
+
+	// If match is found, extract the relevant error message
+	if len(matches) > 1 {
+		return matches[1]
+	}
+
+	// If no match, return the cleaned message
+	return strings.TrimSpace(cleanedMessage)
 }
