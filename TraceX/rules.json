@@ -1,0 +1,20 @@
+[
+  {
+    "rule_name": "Multiple Failed Logins",
+    "patterns": ["(?i)failed login", "(?i)unauthorized access"],
+    "alert_type": "Failed Login Attempt",
+    "description": "Multiple failed login attempts detected."
+  },
+  {
+    "rule_name": "Error Detection",
+    "patterns": ["(?i)error", "(?i)critical", "(?i)failed"],
+    "alert_type": "System Error",
+    "description": "A critical system error or failure was detected."
+  },
+  {
+    "rule_name": "Potential Attack",
+    "patterns": ["(?i)attack", "(?i)intrusion", "(?i)sql injection", "(?i)xss", "(?i)malware"],
+    "alert_type": "Security Threat",
+    "description": "A potential security threat was identified."
+  }
+]
