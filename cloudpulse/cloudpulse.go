@@ -10,21 +10,21 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"regexp"   // ✅ Added for regex-based filtering
-	"strings"  // ✅ Added for string manipulation
+	"regexp"  // Added for regex-based filtering
+	"strings" // Added for string manipulation
 	"time"
 
 	_ "github.com/lib/pq" // PostgreSQL driver
 )
 
 const (
-	serverURL         = "http://localhost:5000/logs" // Mock server to send logs
-	systemdLogScript  = "extract_systemd_logs.sh"   // Path to systemd log extraction script
-	dbUser            = "postgres"
-	dbPassword        = "yourpassword"
-	dbName            = "cloudpulse"
-	dbHost            = "localhost"
-	dbPort            = "5432"
+	serverURL        = "http://172.16.110.252:5000/process-log" // Mock server to send logs
+	systemdLogScript = "extract_systemd_logs.sh"                // Path to systemd log extraction script
+	dbUser           = "postgres"
+	dbPassword       = "yourpassword"
+	dbName           = "cloudpulse"
+	dbHost           = "localhost"
+	dbPort           = "5432"
 )
 
 var db *sql.DB
@@ -120,7 +120,6 @@ func setupSystemdService() {
 	}
 }
 
-
 // Function to monitor a log file and process new lines
 func monitorLogFile(logFilePath string) {
 	file, err := os.Open(logFilePath)
@@ -171,15 +170,45 @@ func monitorLogFile(logFilePath string) {
 	}
 }
 
+// Function to send log data to an HTTP server
 func sendToHTTP(jsonData []byte) {
+	// Channel to signal animation to stop
+	done := make(chan bool)
+
+	// Start animation in a separate goroutine
+	go func() {
+		dots := []string{".  ", ".. ", "..."}
+		i := 0
+		for {
+			select {
+			case <-done:
+				fmt.Print("\r\033[K") // Clear animation before exiting
+				return
+			default:
+				fmt.Printf("\rSending logs%s", dots[i%len(dots)])
+				i++
+				time.Sleep(500 * time.Millisecond)
+			}
+		}
+	}()
+
+	// Send the log
 	resp, err := http.Post(serverURL, "application/json", bytes.NewBuffer(jsonData))
+	close(done) // Stop animation
+
 	if err != nil {
-		log.Printf("Failed to send log to HTTP: %v", err)
+		fmt.Println("\rFailed to send log to HTTP.") // Ensure proper output
+		log.Printf("Error: %v", err)
 		return
 	}
 	defer resp.Body.Close()
-	fmt.Println("Log sent to HTTP successfully:", string(jsonData))
+
+	// Print final success message
+	//fmt.Println("\rLog sent successfully!      ") // Clears animation
 }
+
+
+
 
 func writeToFile(jsonData []byte) {
 	file, err := os.OpenFile("cloudpulse_logs.json", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
@@ -220,26 +249,21 @@ func saveToDatabase(logData map[string]string) {
 	fmt.Println("Log stored in database successfully")
 }
 
-// Function to clean log messages
 func cleanLogMessage(rawMessage string) string {
 	// Remove ANSI escape sequences (color codes)
 	ansiEscape := regexp.MustCompile(`\x1b\[[0-9;]*m`)
 	cleanedMessage := ansiEscape.ReplaceAllString(rawMessage, "")
 
-	// Remove timestamp from the message, since it's already extracted
-	timestampPattern := regexp.MustCompile(`^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+\+\d{2}:\d{2}\s`)
-	cleanedMessage = timestampPattern.ReplaceAllString(cleanedMessage, "")
+	// Extract relevant log details
+	// Matches "<service> <process>[PID]: <LOG LEVEL> <component> <message>"
+	logPattern := regexp.MustCompile(`^(\S+)\s+(\S+)\[\d+\]:\s+(ERROR|WARNING|INFO|DEBUG)\s+([\w\d\._]+)\s+(.*)`)
+	matches := logPattern.FindStringSubmatch(cleanedMessage)
 
-	// Remove hostname, process info, and log level, keeping only the actual error message
-	processPattern := regexp.MustCompile(`^\S+\s+\S+\[\d+\]:\s(ERROR\s[\w\d\._]+)`)
-	matches := processPattern.FindStringSubmatch(cleanedMessage)
-
-	// If match is found, extract the relevant error message
-	if len(matches) > 1 {
-		return matches[1]
+	if len(matches) > 4 {
+		// Format the cleaned message
+		return fmt.Sprintf("%s %s %s %s %s", matches[1], matches[2], matches[3], matches[4], matches[5])
 	}
 
-	// If no match, return the cleaned message
 	return strings.TrimSpace(cleanedMessage)
 }
 
@@ -252,8 +276,7 @@ func extractTimestamp(rawMessage string) string {
 	if len(matches) > 1 {
 		return matches[1] // Extracted timestamp
 	}
-	
+
 	// If no valid timestamp is found, fallback to current time (optional)
 	return time.Now().Format(time.RFC3339)
 }
-
