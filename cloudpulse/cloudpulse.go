@@ -120,6 +120,7 @@ func setupSystemdService() {
 	}
 }
 
+
 // Function to monitor a log file and process new lines
 func monitorLogFile(logFilePath string) {
 	file, err := os.Open(logFilePath)
@@ -134,11 +135,14 @@ func monitorLogFile(logFilePath string) {
 	for {
 		line, err := reader.ReadString('\n')
 		if err == nil {
-			// ✅ Define `cleanedMessage` here by calling `cleanLogMessage(line)`
+			// Extract timestamp from the log entry
+			extractedTimestamp := extractTimestamp(line)
+
+			// Define `cleanedMessage` by calling `cleanLogMessage(line)`
 			cleanedMessage := cleanLogMessage(line)
 
 			logEntry := map[string]string{
-				"timestamp": time.Now().UTC().Format(time.RFC3339),
+				"timestamp": extractedTimestamp, // Use extracted timestamp
 				"message":   cleanedMessage,
 				"source":    logFilePath,
 				"cloud":     "openstack",
@@ -216,12 +220,13 @@ func saveToDatabase(logData map[string]string) {
 	fmt.Println("Log stored in database successfully")
 }
 
+// Function to clean log messages
 func cleanLogMessage(rawMessage string) string {
 	// Remove ANSI escape sequences (color codes)
 	ansiEscape := regexp.MustCompile(`\x1b\[[0-9;]*m`)
 	cleanedMessage := ansiEscape.ReplaceAllString(rawMessage, "")
 
-	// Remove leading timestamps (e.g., "2025-03-25T20:35:36.731131+05:30")
+	// Remove timestamp from the message, since it's already extracted
 	timestampPattern := regexp.MustCompile(`^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+\+\d{2}:\d{2}\s`)
 	cleanedMessage = timestampPattern.ReplaceAllString(cleanedMessage, "")
 
@@ -237,3 +242,18 @@ func cleanLogMessage(rawMessage string) string {
 	// If no match, return the cleaned message
 	return strings.TrimSpace(cleanedMessage)
 }
+
+// Function to extract and clean the log timestamp
+func extractTimestamp(rawMessage string) string {
+	// Regex to match timestamp (e.g., 2025-03-25T20:47:36.731131+05:30)
+	timestampPattern := regexp.MustCompile(`^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+\+\d{2}:\d{2})`)
+
+	matches := timestampPattern.FindStringSubmatch(rawMessage)
+	if len(matches) > 1 {
+		return matches[1] // Extracted timestamp
+	}
+	
+	// If no valid timestamp is found, fallback to current time (optional)
+	return time.Now().Format(time.RFC3339)
+}
+
