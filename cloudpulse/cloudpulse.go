@@ -207,9 +207,6 @@ func sendToHTTP(jsonData []byte) {
 	//fmt.Println("\rLog sent successfully!      ") // Clears animation
 }
 
-
-
-
 func writeToFile(jsonData []byte) {
 	file, err := os.OpenFile("cloudpulse_logs.json", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
@@ -249,21 +246,34 @@ func saveToDatabase(logData map[string]string) {
 	fmt.Println("Log stored in database successfully")
 }
 
+// cleanLogMessage removes ANSI escape sequences and extracts the core log message.
 func cleanLogMessage(rawMessage string) string {
-	// Remove ANSI escape sequences (color codes)
-	ansiEscape := regexp.MustCompile(`\x1b\[[0-9;]*m`)
+	// Step 1: Normalize ANSI codes (handles both \x1b and #033 notations)
+	ansiEscape := regexp.MustCompile(`(\x1b|\#033)\[[0-9;]*[mK]`)
 	cleanedMessage := ansiEscape.ReplaceAllString(rawMessage, "")
 
-	// Extract relevant log details
-	// Matches "<service> <process>[PID]: <LOG LEVEL> <component> <message>"
-	logPattern := regexp.MustCompile(`^(\S+)\s+(\S+)\[\d+\]:\s+(ERROR|WARNING|INFO|DEBUG)\s+([\w\d\._]+)\s+(.*)`)
+	// Step 2: Correct regex to extract log fields
+	logPattern := regexp.MustCompile(`(?P<Service>\S+)\[(?P<PID>\d+)\]:\s*(?P<Level>DEBUG|INFO|WARNING|ERROR)\s+(?P<Component>[\w\d\._]+)\s+(?P<Message>.*?)(?P<Metadata>\{\{.*\}\})?$`)
+
+	// Step 3: Extract matches
 	matches := logPattern.FindStringSubmatch(cleanedMessage)
 
-	if len(matches) > 4 {
-		// Format the cleaned message
-		return fmt.Sprintf("%s %s %s %s %s", matches[1], matches[2], matches[3], matches[4], matches[5])
+	// Step 4: If regex matches, format the cleaned log
+	if len(matches) > 0 {
+		service := matches[1]
+		pid := matches[2]
+		level := matches[3]
+		component := matches[4]
+		message := strings.TrimSpace(matches[5])
+		metadata := strings.TrimSpace(matches[6])
+
+		if metadata != "" {
+			return fmt.Sprintf("%s[%s]:%s %s , %s, %s", service, pid, level, component, message, metadata)
+		}
+		return fmt.Sprintf("%s[%s]:%s %s , %s", service, pid, level, component, message)
 	}
 
+	// If regex does not match, return a fallback cleaned message
 	return strings.TrimSpace(cleanedMessage)
 }
 
