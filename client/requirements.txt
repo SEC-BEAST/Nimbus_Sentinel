@@ -1,0 +1,13 @@
+# Core Dependencies
+websockets>=11.0.3
+asyncio>=3.4.3
+python-dotenv>=1.0.0
+
+# UI and Display Dependencies
+art>=6.1
+tabulate>=0.9.0
+pwinput>=1.0.2
+
+# SSL and Security
+cryptography>=41.0.0
+pyOpenSSL>=23.2.0 

@@ -1,0 +1,19 @@
+# Core Dependencies
+websockets>=11.0.3
+asyncio>=3.4.3
+python-dotenv>=1.0.0
+aiolimiter>=1.1.0
+
+# OpenStack Dependencies
+openstacksdk>=1.0.0
+novaclient>=18.0.0
+glanceclient>=4.0.0
+neutronclient>=8.0.0
+keystoneauth1>=5.0.0
+
+# SSL and Security
+cryptography>=41.0.0
+pyOpenSSL>=23.2.0
+
+# Logging and Utilities
+colorlog>=6.7.0 
