@@ -31,63 +31,65 @@ var db *sql.DB
 var outputMode string
 
 var defaultLogPaths = []string{
-	"/var/log/syslog",
-	"/var/log/auth.log",
-	"/var/log/nginx/access.log",
-	"/var/log/nginx/error.log",
-	"/var/log/apache2/access.log",
-	"/var/log/apache2/error.log",
-	"/var/log/keystone/keystone.log",
-	"/var/log/nova/nova-api.log",
-	"/var/log/nova/nova-compute.log",
-	"/var/log/glance/glance-api.log",
-	"/var/log/glance/glance-registry.log",
-	"/var/log/cinder/cinder-api.log",
-	"/var/log/cinder/cinder-volume.log",
-	"/var/log/neutron/neutron-server.log",
-	"/var/log/neutron/neutron-l3-agent.log",
-	"/var/log/neutron/neutron-dhcp-agent.log",
-	"/var/log/neutron/neutron-metadata-agent.log",
-	"/var/log/horizon/horizon.log",
-	"/var/log/ceilometer/ceilometer-agent.log",
-	"/var/log/heat/heat-api.log",
-	"/var/log/heat/heat-engine.log",
+	"/opt/stack/logs/keystone.log",
+	"/opt/stack/logs/nova-compute.log",
+	"/opt/stack/logs/cinder.log",
+	"/opt/stack/logs/glance-api.log",
+	"/opt/stack/logs/neutron.log",
 }
 
 func main() {
-	// Ensure systemd service is set up before anything else
+	// Set up systemd service before starting
 	setupSystemdService()
 
+	// Step 1: Ask user where to send logs
 	fmt.Println("Choose log destination:")
 	fmt.Println("1. Send to HTTP Server")
 	fmt.Println("2. Save to Local File")
 	fmt.Println("3. Store in Database")
 	fmt.Scanln(&outputMode)
 
-	var logFilePath string
+	// Step 2: Ask user to use auto-detection or manual path
 	fmt.Println("Choose log source:")
-	fmt.Println("1. Auto-detect logs")
+	fmt.Println("1. Monitor all logs in /opt/stack/logs")
 	fmt.Println("2. Enter custom log path")
 	var choice int
 	fmt.Scanln(&choice)
 
+	var logPaths []string
+
 	if choice == 1 {
-		logFilePath = detectLogFile()
-		if logFilePath == "" {
-			fmt.Println("No logs found in standard locations. Running systemd log extraction...")
+		// Detect all available logs in /opt/stack/logs
+		for _, path := range defaultLogPaths {
+			if _, err := os.Stat(path); err == nil {
+				fmt.Println("Monitoring log file:", path)
+				logPaths = append(logPaths, path)
+			}
+		}
+
+		if len(logPaths) == 0 {
+			fmt.Println("No valid log files found in /opt/stack/logs.")
 			runSystemdLogExtraction()
-			logFilePath = detectLogFile()
+			os.Exit(1)
 		}
 	} else {
+		var customPath string
 		fmt.Print("Enter custom log path: ")
-		fmt.Scanln(&logFilePath)
+		fmt.Scanln(&customPath)
+
+		if _, err := os.Stat(customPath); err != nil {
+			log.Fatalf("Invalid log path: %v", err)
+		}
+		logPaths = append(logPaths, customPath)
 	}
 
-	if logFilePath == "" {
-		log.Fatal("No valid log file found!")
+	// Monitor all selected logs concurrently
+	for _, path := range logPaths {
+		go monitorLogFile(path)
 	}
 
-	monitorLogFile(logFilePath)
+	// Keep main alive
+	select {}
 }
 
 func detectLogFile() string {
@@ -210,18 +212,18 @@ func sendToHTTP(jsonData []byte) {
 func writeToFile(jsonData []byte) {
 	file, err := os.OpenFile("cloudpulse_logs.json", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		log.Printf("Failed to open log file: %v", err)
+		log.Printf("❌ Failed to open log file: %v", err)
 		return
 	}
 	defer file.Close()
 
 	_, err = file.WriteString(string(jsonData) + "\n")
 	if err != nil {
-		log.Printf("Failed to write log to file: %v", err)
+		log.Printf("❌ Failed to write log to file: %v", err)
 		return
 	}
 
-	fmt.Println("Log saved to file successfully")
+	fmt.Printf("📄 Saved log to file: %s\n", jsonData)
 }
 
 func saveToDatabase(logData map[string]string) {
