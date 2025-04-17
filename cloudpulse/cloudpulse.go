@@ -48,6 +48,7 @@ func main() {
 	fmt.Println("2. Save to Local File")
 	fmt.Println("3. Store in Database")
 	fmt.Scanln(&outputMode)
+	outputMode = strings.TrimSpace(outputMode)
 
 	// Step 2: Ask user to use auto-detection or manual path
 	fmt.Println("Choose log source:")
