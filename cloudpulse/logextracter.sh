@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Define log files where systemd logs will be stored
+# Define log files where systemd logs will be stored 
 LOG_DIR="/var/log/openstack/"
 mkdir -p $LOG_DIR
 
