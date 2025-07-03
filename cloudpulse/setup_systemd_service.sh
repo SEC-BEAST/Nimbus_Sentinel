@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash 
 
 SERVICE_FILE="/etc/systemd/system/logextracter.service"
 
