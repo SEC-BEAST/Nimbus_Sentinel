@@ -19,7 +19,7 @@ import (
 
 const (
 	serverURL        = "http://172.16.110.252:5000/process-log" // Mock server to send logs
-	systemdLogScript = "extract_systemd_logs.sh"                // Path to systemd log extraction script
+	systemdLogScript = "extract_systemd_logs.sh"                // Path to systemd log extraction script 
 	dbUser           = "postgres"
 	dbPassword       = "yourpassword"
 	dbName           = "cloudpulse"
