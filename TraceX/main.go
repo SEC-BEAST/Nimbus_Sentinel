@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// LogData represents the structure of the incoming logs.
+// LogData represents the structure of the incoming logs..
 type LogData struct {
 	Message   string `json:"message"`
 	Source    string `json:"source"`
